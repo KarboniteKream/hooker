@@ -1,0 +1,17 @@
+{
+  "name": "hooker",
+  "description": "A simple webhook server for executing shell scripts.",
+  "version": "0.1.0",
+  "main": "index.js",
+  "repository": "git@github.com:KarboniteKream/hooker.git",
+  "author": "Klemen Košir <klemen.kosir@kream.io>",
+  "contributors": [
+    "Andraž Dobnikar <andraz.dobnikar@signapps.si>"
+  ],
+  "license": "MIT",
+  "dependencies": {
+    "js-yaml": "3.9.*",
+    "koa": "2.3.*",
+    "koa-router": "7.2.*"
+  }
+}
