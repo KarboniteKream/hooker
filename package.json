@@ -10,8 +10,11 @@
   ],
   "license": "MIT",
   "dependencies": {
+    "joi": "10.6.*",
     "js-yaml": "3.9.*",
     "koa": "2.3.*",
-    "koa-router": "7.2.*"
+    "koa-bodyparser": "4.2.*",
+    "koa-router": "7.2.*",
+    "unklogger": "0.4.*"
   }
 }

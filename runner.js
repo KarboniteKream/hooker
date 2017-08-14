@@ -2,30 +2,70 @@
 
 const childProcess = require("child_process");
 const fs = require("fs");
+const Log = require("unklogger");
 const path = require("path");
 
-function runTask(hook, task) {
-	let filename = `${task}_${getTimestamp()}.log`;
-	let log = fs.createWriteStream(path.join(__dirname, "logs", hook.key, filename));
+function checkConditions(task, parameters) {
+	if (typeof task.conditions === "undefined") {
+		return true;
+	}
 
-	let shell = childProcess.spawn("/bin/sh", ["-c", hook.tasks[task]], {
-		cwd: hook.directory,
-	});
+	let match = true;
 
-	shell.stdout.on("data", (data) => {
-		log.write(data);
-	});
+	for (let name in task.conditions) {
+		let condition = task.conditions[name];
 
-	shell.stderr.on("data", (data) => {
-		log.write(data);
-	});
+		if (condition[0] === "/") {
+			let regex = null;
 
-	shell.on("exit", (code) => {
-		log.write(`[Runner] Exited with code ${code}.\n`);
-		log.end();
+			try {
+				let match = condition.match(/^\/(.*)\/([gimu]*)$/);
+				regex = new RegExp(match[1], match[2]);
+			} catch (err) {
+				Log.warn(task.name, `Regex in condition '${name}' is not valid.`);
+				match = false;
+				break;
+			}
+
+			if (regex.test(parameters[name]) === false) {
+				match = false;
+				break;
+			}
+		} else if (condition !== parameters[name]) {
+			match = false;
+			break;
+		}
+	}
+
+	return match;
+}
+
+function run(hook, task) {
+	return new Promise((resolve) => {
+		let filename = `${task.name}_${getTimestamp()}.log`;
+		let log = fs.createWriteStream(path.join(__dirname, "logs", hook.key, filename));
+
+		let shell = childProcess.spawn("/bin/sh", ["-c", task.script], {
+			cwd: task.directory,
+		});
+
+		shell.stdout.on("data", (data) => {
+			log.write(data);
+		});
+
+		shell.stderr.on("data", (data) => {
+			log.write(data);
+		});
+
+		shell.on("exit", (code) => {
+			log.write(`[Runner] Exited with code ${code}.\n`);
+			log.end();
+			resolve(code);
+		});
 	});
 }
 
+// TODO: Export in 'unklogger', rename to 'timestamp'.
 function getTimestamp() {
 	let date = new Date();
 
@@ -45,5 +85,6 @@ function pad(number) {
 }
 
 module.exports = {
-	runTask,
+	checkConditions,
+	run,
 };

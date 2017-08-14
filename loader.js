@@ -1,7 +1,9 @@
 "use strict";
 
 const fs = require("fs");
+const Log = require("unklogger");
 const path = require("path");
+const Schema = require("./schema");
 const yaml = require("js-yaml");
 
 function loadHooks() {
@@ -9,6 +11,7 @@ function loadHooks() {
 
 	let directory = path.join(__dirname, "hooks");
 	let files = fs.readdirSync(directory).filter((file) => {
+		// TODO: Support both yaml and yml?
 		return file.endsWith(".yaml");
 	});
 
@@ -18,10 +21,23 @@ function loadHooks() {
 		try {
 			hook = yaml.safeLoad(fs.readFileSync(path.join(directory, file), "utf-8"));
 		} catch (err) {
-			console.error(`[Loader] Unable to parse '${file}'.\n${err.message}`);
+			Log.error("Loader", `Unable to parse '${file}'.`);
+			Log.error("Loader", err.message);
 		}
 
-		if (hook === null || hook.enabled === false) {
+		if (hook === null) {
+			continue;
+		}
+
+		if (typeof hook === "undefined") {
+			Log.warn("Loader", `File '${file}' is empty.`);
+			continue;
+		}
+
+		Log.info("Loader", `Parsing '${file}'.`);
+		hook = Schema.validateHook(hook);
+
+		if (hook === null) {
 			continue;
 		}
 
@@ -32,11 +48,8 @@ function loadHooks() {
 			fs.mkdirSync(logs);
 		}
 
-		for (let task of Object.keys(hook.tasks)) {
-			hook.tasks[task] = hook.tasks[task].trim();
-		}
-
 		hooks[hook.key] = hook;
+		Log.success("Loader", `Loaded '${file}'.`);
 	}
 
 	return hooks;

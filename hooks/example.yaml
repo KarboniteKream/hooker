@@ -1,0 +1,47 @@
+name: Example Hook
+enabled: true
+secret: SECRET
+directory: ~/Projects/hooker
+
+inits:
+    - name: pull
+      script: |
+          git pull
+
+    - name: download
+      enabled: false
+      conditions:
+          repository: /(.*)-vue/
+      script: yarn
+
+tasks:
+    - name: update
+      conditions:
+          repository: /Signapps\/(.*)-vue/i
+          branch: stage
+      script: |
+          yarn run build
+
+    - name: update
+      directory: ~/Projects/hoooker
+      init: false
+      conditions:
+          branch: live
+          committer: /@kream\.io/
+      script: |
+          echo "Up-to-date!"
+
+    - name: update
+      directory: ~/Projects/hooker-test
+      init: pull
+      conditions:
+          branch: master
+          author: Klemen Košir <klemen.kosir@kream.io>
+          message: /[BUILD]/
+      script: |
+          drush cc all
+
+    - name: clean
+      init: pull
+      script: |
+          echo "haha, oops"
