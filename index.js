@@ -14,6 +14,15 @@ const server = new Koa();
 const router = new KoaRouter();
 server.use(bodyParser());
 
+server.use(async (ctx, next) => {
+	const start = new Date();
+	await next();
+	const ms = new Date() - start;
+	Log.info(`${ctx.method} ${ctx.url} - ${ms}ms`);
+	if (ctx.status !== 200) console.log(`RESPONSE: ${ctx.status} - ${ctx.body}`);
+	else console.log(`RESPONSE: ${ctx.status}`);
+});
+
 router.post("/:key/:task?", async (ctx) => {
 	if (ctx.params.key in HOOKS === false) {
 		ctx.status = 404;
@@ -69,6 +78,8 @@ router.post("/:key/:task?", async (ctx) => {
 			});
 		}
 
+		console.log(task);
+
 		for (let init of inits) {
 			if (init.enabled === false) {
 				continue;
@@ -83,9 +94,13 @@ router.post("/:key/:task?", async (ctx) => {
 				continue;
 			}
 
+			console.log(init);
+
 			Log.success(hook.name, `Running init '${init.name}'.`);
 			await Runner.run(hook, init);
 		}
+
+		console.log(task);
 
 		Log.success(hook.name, `Running task '${task.name}'.`);
 		let code = await Runner.run(hook, task);
