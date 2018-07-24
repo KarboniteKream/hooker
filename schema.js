@@ -90,6 +90,8 @@ function validateHook(hook) {
 function parseParameters(request) {
 	let parameters = null;
 
+	console.log("HEADERS", request.header);
+
 	// Gogs/Gitea.
 	// TODO: Check 'user-agent' instead?
 	if (typeof request.header["x-gogs-event"] !== "undefined") {
