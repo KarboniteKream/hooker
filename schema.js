@@ -90,7 +90,7 @@ function validateHook(hook) {
 function parseParameters(request) {
 	let parameters = null;
 
-	console.log("HEADERS", request.header);
+	// console.log("HEADERS", request.header);
 
 	// Gogs/Gitea.
 	// TODO: Check 'user-agent' instead?
@@ -110,7 +110,7 @@ function parseParameters(request) {
 		let data = request.body;
 		let commit = data.commits[0]; // OK
 
-		console.log("HOOK", data);
+		// console.log("HOOK", data);
 
 		parameters = {
 			secret: request.header["x-gitlab-token"], // OK
