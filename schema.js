@@ -113,7 +113,7 @@ function parseParameters(request) {
 		console.log("HOOK", data);
 
 		parameters = {
-			secret: data.secret, // TODO:
+			secret: request.header["x-gitlab-token"], // OK
 			repository: data.project.path_with_namespace, // OK
 
 			branch: data.ref.substr(11), // OK
