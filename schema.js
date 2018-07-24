@@ -104,6 +104,21 @@ function parseParameters(request) {
 			author: `${commit.author.name} <${commit.author.email}>`,
 			committer: `${commit.committer.name} <${commit.committer.email}>`,
 		};
+	} else if (typeof request.header["x-gitlab-event"] !== "undefined") {
+		let data = request.body;
+		let commit = data.commits[0]; // OK
+
+		console.log("HOOK", data);
+
+		parameters = {
+			secret: data.secret, // TODO:
+			repository: data.project.path_with_namespace, // OK
+
+			branch: data.ref.substr(11), // OK
+			message: commit.message.trim(), // OK
+			author: `${commit.author.name} <${commit.author.email}>`, // OK
+			committer: `${commit.author.name} <${commit.author.email}>`, // OK
+		};
 	}
 
 	return parameters;
