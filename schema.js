@@ -90,9 +90,10 @@ function validateHook(hook) {
 function parseParameters(request) {
 	let parameters = null;
 
-	// Gogs/Gitea.
 	// TODO: Check 'user-agent' instead?
 	if (typeof request.header["x-gogs-event"] !== "undefined") {
+		// Gogs/Gitea.
+
 		let data = request.body;
 		let commit = data.commits[0];
 
@@ -103,6 +104,20 @@ function parseParameters(request) {
 			message: commit.message.trim(),
 			author: `${commit.author.name} <${commit.author.email}>`,
 			committer: `${commit.committer.name} <${commit.committer.email}>`,
+		};
+	} else if (typeof request.header["x-gitlab-event"] !== "undefined") {
+		// GitLab.
+
+		let data = request.body;
+		let commit = data.commits[0];
+
+		parameters = {
+			secret: request.header["x-gitlab-token"],
+			repository: data.project.path_with_namespace,
+			branch: data.ref.substr(11),
+			message: commit.message.trim(),
+			author: `${commit.author.name} <${commit.author.email}>`,
+			committer: `${commit.author.name} <${commit.author.email}>`,
 		};
 	}
 

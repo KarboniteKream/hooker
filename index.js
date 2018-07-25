@@ -14,6 +14,16 @@ const server = new Koa();
 const router = new KoaRouter();
 server.use(bodyParser());
 
+server.use(async (ctx, next) => {
+	await next();
+
+	if (ctx.status === 200) {
+		Log.success("RESPONSE", `${ctx.status}`);
+	} else {
+		Log.error("RESPONSE", `${ctx.status} - ${ctx.body}`);
+	}
+});
+
 router.post("/:key/:task?", async (ctx) => {
 	if (ctx.params.key in HOOKS === false) {
 		ctx.status = 404;
