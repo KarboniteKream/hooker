@@ -106,7 +106,7 @@ function parseParameters(request) {
 			committer: `${commit.committer.name} <${commit.committer.email}>`,
 		};
 	} else if (typeof request.header["x-gitlab-event"] !== "undefined") {
-		// Gitlab.
+		// GitLab.
 
 		let data = request.body;
 		let commit = data.commits[0];
