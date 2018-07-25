@@ -19,8 +19,8 @@ server.use(async (ctx, next) => {
 	await next();
 	const ms = new Date() - start;
 	Log.info(`${ctx.method} ${ctx.url} - ${ms}ms`);
-	if (ctx.status !== 200) console.log(`RESPONSE: ${ctx.status} - ${ctx.body}`);
-	else console.log(`RESPONSE: ${ctx.status}`);
+	if (ctx.status !== 200) Log.error(`RESPONSE: ${ctx.status} - ${ctx.body}`);
+	else Log.success(`RESPONSE: ${ctx.status}`);
 });
 
 router.post("/:key/:task?", async (ctx) => {
@@ -78,8 +78,6 @@ router.post("/:key/:task?", async (ctx) => {
 			});
 		}
 
-		console.log(task);
-
 		for (let init of inits) {
 			if (init.enabled === false) {
 				continue;
@@ -94,13 +92,9 @@ router.post("/:key/:task?", async (ctx) => {
 				continue;
 			}
 
-			console.log(init);
-
 			Log.success(hook.name, `Running init '${init.name}'.`);
 			await Runner.run(hook, init);
 		}
-
-		console.log(task);
 
 		Log.success(hook.name, `Running task '${task.name}'.`);
 		let code = await Runner.run(hook, task);
