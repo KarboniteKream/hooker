@@ -12,9 +12,6 @@ function checkConditions(task, parameters) {
 
 	let match = true;
 
-	// console.log("TASK CONDITIONS", task.conditions);
-	// console.log("HOOK DATA", parameters);
-
 	for (let name in task.conditions) {
 		let condition = task.conditions[name];
 
