@@ -114,7 +114,6 @@ function parseParameters(request) {
 		parameters = {
 			secret: request.header["x-gitlab-token"],
 			repository: data.project.path_with_namespace,
-
 			branch: data.ref.substr(11),
 			message: commit.message.trim(),
 			author: `${commit.author.name} <${commit.author.email}>`,

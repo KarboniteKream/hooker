@@ -15,12 +15,13 @@ const router = new KoaRouter();
 server.use(bodyParser());
 
 server.use(async (ctx, next) => {
-	const start = new Date();
 	await next();
-	const ms = new Date() - start;
-	Log.info(`${ctx.method} ${ctx.url} - ${ms}ms`);
-	if (ctx.status !== 200) Log.error(`RESPONSE: ${ctx.status} - ${ctx.body}`);
-	else Log.success(`RESPONSE: ${ctx.status}`);
+
+	if (ctx.status === 200) {
+		Log.success("RESPONSE", `${ctx.status}`);
+	} else {
+		Log.error("RESPONSE", `${ctx.status} - ${ctx.body}`);
+	}
 });
 
 router.post("/:key/:task?", async (ctx) => {
