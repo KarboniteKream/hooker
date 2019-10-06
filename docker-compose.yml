@@ -1,0 +1,12 @@
+version: '3.7'
+services:
+  hooker:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports: 
+      - "46657:46657"
+    volumes:
+      - ".:/app"
+      - /app/node_modules
+    command: node index.js
